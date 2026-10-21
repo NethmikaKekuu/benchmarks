@@ -2,8 +2,14 @@
 # One 12-minute run per version: 10 -> 25 -> 50 -> 100 users (3 min each step).
 # Take a screenshot of http://localhost:8089 after each version finishes.
 
-$HOST_WITH_CACHE    = "https://aaf8ece1-3077-4a52-ab05-183a424f6d93-dev.e1-us-east-azure.choreoapis.dev/data-platform/giservice/v1.0"
-$HOST_WITHOUT_CACHE = "https://aaf8ece1-3077-4a52-ab05-183a424f6d93-dev.e1-us-east-azure.choreoapis.dev/data-platform/giservice/v1.6"
+# Load host URLs from .env
+Get-Content .env | ForEach-Object {
+    if ($_ -match "^\s*([^#][^=]+)=(.+)$") {
+        [System.Environment]::SetEnvironmentVariable($matches[1].Trim(), $matches[2].Trim())
+    }
+}
+$HOST_WITH_CACHE    = $env:HOST_WITH_CACHE
+$HOST_WITHOUT_CACHE = $env:HOST_WITHOUT_CACHE
 
 $versions = @(
     @{ label = "without_cache"; host = $HOST_WITHOUT_CACHE },
