@@ -36,10 +36,10 @@ from locust import HttpUser, task, between
 # ---------------------------------------------------------------------------
 # Real IDs fetched live from the v1.0 API (verified 2026-10-05)
 # ---------------------------------------------------------------------------
-PRESIDENT_IDS = [
-    "2403-03-01_cit_1",   # Anura Kumara Dissanayake
-    "2279-23_cit_1",      # Ranil Wickremesinghe
-    "2149-34_cit_1",      # Gotabaya Rajapaksa
+PRESIDENTS = [
+    {"id": "2149-34_cit_1",   "date": "2021-06-01"},   # Gotabaya Rajapaksa    2019-11-17 to 2022-07-19
+    {"id": "2279-23_cit_1",   "date": "2023-01-15"},   # Ranil Wickremesinghe  2022-07-20 to 2023-09-13
+    {"id": "2403-03-01_cit_1","date": "2025-10-18"},   # Anura Kumara          2024-09-23 onwards
 ]
 
 PORTFOLIO_IDS = [
@@ -97,7 +97,6 @@ ENTITY_IDS = [
 SEARCH_TERMS = ["Finance", "Education", "Health", "Minister", "Department"]  # all match real org names
 
 DATE = "2025-10-18"
-CABINET_DATES = ["2020-01-01", "2021-06-01", "2022-03-15", "2023-08-01"]  # not verified against data
 
 class GIServiceUser(HttpUser):
     wait_time = between(1, 3)
@@ -108,10 +107,10 @@ class GIServiceUser(HttpUser):
 
     @task(5)
     def active_portfolio_list(self):
-        president_id = random.choice(PRESIDENT_IDS)
+        president = random.choice(PRESIDENTS)
         self.client.post(
-            f"/v1/organisation/active-portfolio-list?presidentId={president_id}",
-            json={"date": DATE},
+            f"/v1/organisation/active-portfolio-list?presidentId={president['id']}",
+            json={"date": president["date"]},
             name="/v1/organisation/active-portfolio-list",
         )
 
@@ -134,11 +133,10 @@ class GIServiceUser(HttpUser):
 
     @task(2)
     def cabinet_flow(self):
-        president_id = random.choice(PRESIDENT_IDS)
-        dates = random.sample(CABINET_DATES, k=random.randint(2, len(CABINET_DATES)))
+        president = random.choice(PRESIDENTS)
         self.client.post(
-            f"/v1/organisation/cabinet-flow/{president_id}",
-            json=dates,
+            f"/v1/organisation/cabinet-flow/{president['id']}",
+            json=[president["date"]],
             name="/v1/organisation/cabinet-flow/{president_id}",
         )
 
