@@ -18,12 +18,12 @@ Usage
 -----
 Run against the Redis-cached version (v1.0, CACHE_ENABLED=true):
   locust -f locust_gi.py \
-    --host="https://aaf8ece1-3077-4a52-ab05-183a424f6d93-dev.e1-us-east-azure.choreoapis.dev/data-platform/giservice/v1.0" \
+    --host=$HOST_WITH_CACHE \
     --users 50 --spawn-rate 5 --run-time 5m --headless --csv=results_with_cache
 
 Run against the non-cached version (v1.6, CACHE_ENABLED=false):
   locust -f locust_gi.py \
-    --host="https://aaf8ece1-3077-4a52-ab05-183a424f6d93-dev.e1-us-east-azure.choreoapis.dev/data-platform/giservice/v1.6" \
+    --host=$HOST_WITHOUT_CACHE \
     --users 50 --spawn-rate 5 --run-time 5m --headless --csv=results_without_cache
 
 Compare results_with_cache_stats.csv vs results_without_cache_stats.csv on
