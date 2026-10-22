@@ -37,20 +37,30 @@ from locust import HttpUser, task, between
 # Real IDs fetched live from the v1.0 API (verified 2026-10-05)
 # ---------------------------------------------------------------------------
 PRESIDENTS = [
-    {"id": "2149-34_cit_1",   "date": "2021-06-01"},   # Gotabaya Rajapaksa    2019-11-17 to 2022-07-19
-    {"id": "2279-23_cit_1",   "date": "2023-01-15"},   # Ranil Wickremesinghe  2022-07-20 to 2023-09-13
-    {"id": "2403-03-01_cit_1","date": "2025-10-18"},   # Anura Kumara          2024-09-23 onwards
-]
-
-PORTFOLIO_IDS = [
-    "2411-10_cab_1",
-    "2411-10_cab_2",
-    "2411-10_cab_3",
-    "2411-10_cab_4",
-    "2411-10_cab_5",
-    "2457-36_cab_1",
-    "2457-36_cab_2",
-    "2403-38-02_cab_1",
+    {
+        "id": "2149-34_cit_1",
+        "date": "2021-06-01",   # Gotabaya Rajapaksa — 2019-11-17 to 2022-07-19
+        "portfolio_ids": [
+            "2187-27_min_48", "2187-27_min_13", "2153-12_min_1",
+            "2187-27_min_2",  "2187-27_min_21", "2187-27_min_57",
+        ],
+    },
+    {
+        "id": "2279-23_cit_1",
+        "date": "2023-01-15",   # Ranil Wickremesinghe — 2022-07-20 to 2023-09-13
+        "portfolio_ids": [
+            "2289-43_min_19", "2289-43_min_21", "2289-43_min_1",
+            "2289-43_min_14", "2289-43_min_12", "2289-43_min_23",
+        ],
+    },
+    {
+        "id": "2403-03-01_cit_1",
+        "date": "2025-10-18",   # Anura Kumara Dissanayake — 2024-09-23 onwards
+        "portfolio_ids": [
+            "2411-10_min_15", "2403-38-02_min_1", "2411-10_min_10",
+            "2411-09_min_1",  "2411-10_min_17",   "2411-10_min_6",
+        ],
+    },
 ]
 
 DEPARTMENT_IDS = [
@@ -116,10 +126,11 @@ class GIServiceUser(HttpUser):
 
     @task(4)
     def departments_by_portfolio(self):
-        portfolio_id = random.choice(PORTFOLIO_IDS)
+        president = random.choice(PRESIDENTS)
+        portfolio_id = random.choice(president["portfolio_ids"])
         self.client.post(
             f"/v1/organisation/departments-by-portfolio/{portfolio_id}",
-            json={"date": DATE},
+            json={"date": president["date"]},
             name="/v1/organisation/departments-by-portfolio/{portfolio_id}",
         )
 
