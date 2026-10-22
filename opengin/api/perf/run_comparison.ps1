@@ -33,6 +33,11 @@ foreach ($v in $versions) {
     $csvPath = Join-Path $PSScriptRoot $csv
     locust -f "$locustFile,$shapeFile" --host=$($v.host) --autostart --autoquit 5 --csv=$csvPath
 
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "Locust failed with exit code $LASTEXITCODE. Stopping." -ForegroundColor Red
+        exit 1
+    }
+
     Write-Host ""
     Write-Host "DONE: $($v.label)" -ForegroundColor Yellow
     Write-Host "Screenshot the Charts tab at http://localhost:8089 NOW." -ForegroundColor Yellow
