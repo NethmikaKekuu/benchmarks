@@ -2,8 +2,12 @@
 # One 12-minute run per version: 10 -> 25 -> 50 -> 100 users (3 min each step).
 # Take a screenshot of http://localhost:8089 after each version finishes.
 
+$locustFile  = Join-Path $PSScriptRoot "locust_gi.py"
+$shapeFile   = Join-Path $PSScriptRoot "comparison_shape.py"
+$envFile     = Join-Path $PSScriptRoot ".env"
+
 # Load host URLs from .env
-Get-Content .env | ForEach-Object {
+Get-Content $envFile | ForEach-Object {
     if ($_ -match "^\s*([^#][^=]+)=(.+)$") {
         [System.Environment]::SetEnvironmentVariable($matches[1].Trim(), $matches[2].Trim())
     }
@@ -26,7 +30,8 @@ foreach ($v in $versions) {
     Write-Host "CSV: ${csv}_stats.csv" -ForegroundColor Cyan
     Write-Host "========================================" -ForegroundColor Cyan
 
-    locust -f locust_gi.py,comparison_shape.py --host=$($v.host) --autostart --autoquit 5 --csv=$csv
+    $csvPath = Join-Path $PSScriptRoot $csv
+    locust -f "$locustFile,$shapeFile" --host=$($v.host) --autostart --autoquit 5 --csv=$csvPath
 
     Write-Host ""
     Write-Host "DONE: $($v.label)" -ForegroundColor Yellow
