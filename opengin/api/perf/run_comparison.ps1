@@ -15,6 +15,11 @@ Get-Content $envFile | ForEach-Object {
 $HOST_WITH_CACHE    = $env:HOST_WITH_CACHE
 $HOST_WITHOUT_CACHE = $env:HOST_WITHOUT_CACHE
 
+if (-not $HOST_WITH_CACHE -or -not $HOST_WITHOUT_CACHE) {
+    Write-Host "ERROR: HOST_WITH_CACHE and HOST_WITHOUT_CACHE must be set in $envFile" -ForegroundColor Red
+    exit 1
+}
+
 $versions = @(
     @{ label = "without_cache"; host = $HOST_WITHOUT_CACHE },
     @{ label = "with_cache";    host = $HOST_WITH_CACHE }
