@@ -38,28 +38,32 @@ from locust import HttpUser, task, between
 # ---------------------------------------------------------------------------
 PRESIDENTS = [
     {
-        "id": "2149-34_cit_1",
-        "date": "2021-06-01",   # Gotabaya Rajapaksa — 2019-11-17 to 2022-07-19
+        "id": "2149-34_cit_1",   # Gotabaya Rajapaksa — 2019-11-17 to 2022-07-19
+        # Common portfolios across 2019-11-27, 2019-12-10, 2019-12-18
+        # (2151-38_cab_22 dropped — absent on Dec 10 and Dec 18)
         "portfolio_ids": [
-            "2187-27_cab_36", "2187-27_cab_53", "2187-27_cab_57",
-            "2187-27_cab_40", "2187-27_cab_33", "2187-27_cab_51",
+            "2151-38_cab_1",  "2151-38_cab_4",  "2151-38_cab_8",
+            "2151-38_cab_14", "2151-38_cab_16", "2151-38_cab_23",
         ],
+        "cabinet_dates": ["2019-11-27", "2019-12-10", "2019-12-18"],
     },
     {
-        "id": "2279-23_cit_1",
-        "date": "2023-01-15",   # Ranil Wickremesinghe — 2022-07-20 to 2023-09-13
+        "id": "2279-23_cit_1",   # Ranil Wickremesinghe — 2022-07-20 to 2023-09-13
+        # Common portfolios across 2024-08-02, 2024-08-07, 2024-08-14
         "portfolio_ids": [
-            "2289-43_cab_19", "2289-43_cab_23", "2289-43_cab_17",
-            "2289-43_cab_8",  "2289-43_cab_29", "2289-43_cab_12",
+            "2289-43_cab_2",  "2289-43_cab_8",  "2289-43_cab_9",
+            "2289-43_cab_12", "2289-43_cab_22", "2289-43_cab_28",
         ],
+        "cabinet_dates": ["2024-08-02", "2024-08-07", "2024-08-14"],
     },
     {
-        "id": "2403-03-01_cit_1",
-        "date": "2025-10-18",   # Anura Kumara Dissanayake — 2024-09-23 onwards
+        "id": "2403-03-01_cit_1",   # Anura Kumara Dissanayake — 2024-09-23 onwards
+        # Portfolios from verified snapshot (2025-10-18); 2024-10-15 and 2025-04-01 unverified
         "portfolio_ids": [
-            "2403-38-02_cab_3", "2411-10_cab_18", "2411-10_cab_17",
-            "2411-10_cab_4",    "2411-10_cab_12", "2411-10_cab_1",
+            "2411-10_cab_1",  "2411-10_cab_4",  "2411-10_cab_9",
+            "2411-10_cab_12", "2411-10_cab_17", "2411-10_cab_18",
         ],
+        "cabinet_dates": ["2024-10-15", "2025-04-01", "2025-10-18"],
     },
 ]
 
@@ -96,7 +100,7 @@ CATEGORY_IDS = [
     "49a6096c-08b4-4097-af23-18148edb5d0c",   # Human Resources
     "33012bbf-6ec4-4972-af0a-dbc49d362335",   # Tourism
     "d627e496-6b41-44f9-b1a6-e0ff44a6992a",   # Budget
-    "36eb7759-8a70-415e-8db4-c718a58a62d4",   # News  
+    "6ea4e56b-352e-4fea-b1ee-c5fe323186c3",   # Special Notices
 ]
 
 ENTITY_IDS = [
@@ -120,7 +124,7 @@ class GIServiceUser(HttpUser):
         president = random.choice(PRESIDENTS)
         self.client.post(
             f"/v1/organisation/active-portfolio-list?presidentId={president['id']}",
-            json={"date": president["date"]},
+            json={"date": random.choice(president["cabinet_dates"])},
             name="/v1/organisation/active-portfolio-list",
         )
 
@@ -130,7 +134,7 @@ class GIServiceUser(HttpUser):
         portfolio_id = random.choice(president["portfolio_ids"])
         self.client.post(
             f"/v1/organisation/departments-by-portfolio/{portfolio_id}",
-            json={"date": president["date"]},
+            json={"date": random.choice(president["cabinet_dates"])},
             name="/v1/organisation/departments-by-portfolio/{portfolio_id}",
         )
 
@@ -147,7 +151,7 @@ class GIServiceUser(HttpUser):
         president = random.choice(PRESIDENTS)
         self.client.post(
             f"/v1/organisation/cabinet-flow/{president['id']}",
-            json=[president["date"]],
+            json=president["cabinet_dates"],
             name="/v1/organisation/cabinet-flow/{president_id}",
         )
 
