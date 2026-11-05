@@ -110,7 +110,7 @@ ENTITY_IDS = [
 
 SEARCH_TERMS = ["Finance", "Education", "Health", "Minister", "Department"]  # all match real org names
 
-DATE = "2025-10-18"
+ALL_DATES = [d for p in PRESIDENTS for d in p["cabinet_dates"]]
 
 class GIServiceUser(HttpUser):
     wait_time = between(1, 3)
@@ -142,7 +142,7 @@ class GIServiceUser(HttpUser):
     def prime_minister(self):
         self.client.post(
             "/v1/organisation/prime-minister",
-            json={"date": DATE},
+            json={"date": random.choice(ALL_DATES)},
             name="/v1/organisation/prime-minister",
         )
 
@@ -224,7 +224,7 @@ class GIServiceUser(HttpUser):
     def search(self):
         query = random.choice(SEARCH_TERMS)
         self.client.get(
-            f"/v1/search?search_query={query}&as_of_date={DATE}&limit=20",
+            f"/v1/search?search_query={query}&limit=20",
             name="/v1/search",
         )
 
