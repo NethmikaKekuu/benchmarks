@@ -1,6 +1,9 @@
 # run_comparison.ps1
-# One 12-minute run per version: 10 -> 25 -> 50 -> 100 users (3 min each step).
-# Take a screenshot of http://localhost:8089 after each version finishes.
+# Runs two 12-minute load tests sequentially (without_cache, then with_cache).
+# Each test steps through 10 -> 25 -> 50 -> 100 users (3 min each step).
+# After each test ends, the Locust web UI stays up for 2 minutes (--autoquit 120).
+# Take your screenshot of http://localhost:8089/charts within those 2 minutes.
+# The script then waits for Enter before starting the next test.
 
 $locustFile  = Join-Path $PSScriptRoot "locust_gi.py"
 $shapeFile   = Join-Path $PSScriptRoot "comparison_shape.py"
@@ -39,13 +42,12 @@ foreach ($v in $versions) {
     locust -f "$locustFile,$shapeFile" --host=$($v.host) --autostart --autoquit 120 --csv=$csvPath
 
     if ($LASTEXITCODE -ne 0) {
-        Write-Host "Locust failed with exit code $LASTEXITCODE. Stopping." -ForegroundColor Red
-        exit 1
+        Write-Host "Locust exited with code $LASTEXITCODE (failures during load test are expected). Continuing." -ForegroundColor Yellow
     }
 
     Write-Host ""
     Write-Host "DONE: $($v.label)" -ForegroundColor Yellow
-    Write-Host "Screenshot the Charts tab at http://localhost:8089 NOW." -ForegroundColor Yellow
+    Write-Host "You have 2 minutes to screenshot http://localhost:8089/charts before the UI shuts down." -ForegroundColor Yellow
     Read-Host "Press Enter to start the next version"
 }
 
